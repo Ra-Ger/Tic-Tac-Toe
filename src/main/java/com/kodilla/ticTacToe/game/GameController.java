@@ -7,16 +7,17 @@ public class GameController {
 
     Board board;
     String playerX;
-    String playerY;
+    String playerO;
     int gameCounter;
     int playerXScore;
-    int playerYScore;
+    int playerOScore;
     AIPlayer aiPlayer;
+    int maxWinCombo = 5;
 
-    public GameController(Board board, String playerX, String playerY) {
+    public GameController(Board board, String playerX, String playerO) {
         this.board = board;
         this.playerX = playerX;
-        this.playerY = playerY;
+        this.playerO = playerO;
     }
 
     public GameController(Board board, AIPlayer aiPlayer, String player)
@@ -25,11 +26,11 @@ public class GameController {
         this.aiPlayer = aiPlayer;
         if(aiPlayer.getItX()) {
             playerX = "AI";
-            playerY = player;
+            playerO = player;
         }
         else {
             playerX = player;
-            playerY = "AI";
+            playerO = "AI";
         }
     }
 
@@ -53,87 +54,208 @@ public class GameController {
     public Character checkIfAnyoneWon()
     {
         char[][] charBoard = board.getTicTacToeBoard();
-
-        // row
-        for (int i = 0; i < charBoard.length; i++) {
-            for (int j = 0; j < charBoard[i].length; j++) {
-                if (charBoard[i][j] != '\u0000') {
-                    if(j != 0)
-                    {
-                        if(charBoard[i][j] == charBoard[i][j-1]) // jeżeli obecna ruwna poprzedniej
-                        {
-                            if(j == charBoard[i].length-1)
+/*
+        if(charBoard.length < 4) {
+            // row
+            for (int i = 0; i < charBoard.length; i++) {
+                for (int j = 0; j < charBoard[i].length; j++) {
+                    if (charBoard[i][j] != '\u0000') {
+                        if (j != 0) {
+                            if (charBoard[i][j] == charBoard[i][j - 1]) // jeżeli obecna ruwna poprzedniej
                             {
-                                return charBoard[i][j];
-                            }
+                                if (j == charBoard[i].length - 1) {
+                                    return charBoard[i][j];
+                                }
+                            } else break;
                         }
-                        else break;
-                    }
+                    } else break;
                 }
-                else break;
             }
-        }
 
-        // column
-        for (int i = 0; i < charBoard.length && i < charBoard[i].length; i++) {
-            for (int j = 1; j < charBoard.length; j++) {
-                if(charBoard[j-1][i] != '\u0000' && charBoard[j][i] != '\u0000')
-                {
-                    if(charBoard[j-1][i] == charBoard[j][i])
-                    {
-                        if(j >= charBoard.length-1)
-                        {
-                            return charBoard[j][i];
+            // column
+            for (int i = 0; i < charBoard.length && i < charBoard[i].length; i++) {
+                for (int j = 1; j < charBoard.length; j++) {
+                    if (charBoard[j - 1][i] != '\u0000' && charBoard[j][i] != '\u0000') {
+                        if (charBoard[j - 1][i] == charBoard[j][i]) {
+                            if (j >= charBoard.length - 1) {
+                                return charBoard[j][i];
+                            }
+                        } else {
+                            break;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         break;
                     }
                 }
-                else
+            }
+
+            //diagonally from top
+            for (int i = 1; i < charBoard.length; i++) {
+                if (charBoard[i - 1][i - 1] != '\u0000' && charBoard[i][i] != '\u0000') {
+                    if (charBoard[i - 1][i - 1] == charBoard[i][i]) {
+                        if (i >= charBoard.length - 1) {
+                            return charBoard[i][i];
+                        }
+                    } else break;
+                } else break;
+            }
+
+            // diagonally from down
+            for (int i = 1; i < charBoard.length; i++) {
+                if (charBoard[charBoard.length - 1 - i][i] != '\u0000' && charBoard[charBoard.length - i][i - 1] != '\u0000') {
+                    if (charBoard[charBoard.length - 1 - i][i] == charBoard[charBoard.length - i][i - 1]) {
+                        if (i >= charBoard.length - 1) {
+                            return charBoard[charBoard.length - 1 - i][i];
+                        }
+                    } else break;
+                } else break;
+            }
+            return null;
+        }
+        else // dla 4 i wiencej
+        {*/
+            int combo = maxWinCombo;
+            if(charBoard.length < 5)
+                combo = charBoard.length; // jezeli mniejsze niz 5 to dostosowoje sie do wielkosci dablicy
+
+            // w prawo
+            for (int i = 0; i < charBoard.length; i++) {
+                for (int j = 0; j < charBoard[i].length; j++) {
+                    if(charBoard[i].length - j < combo)
+                        break;  // jezeli tablica krotsza niz combo to na pewno nie ma tu wygranej
+                    if (charBoard[i][j] != '\u0000')
+                    {
+                        for(int c = 1; c < combo; c++)
+                        {
+                            // tutaj sprawdzasz czy kolejne 5 znakow takie same
+                            if(charBoard[i][j] != charBoard[i][j+c])
+                            {
+                                j = j+c-1; // jezeli nie to przeskakujesz do ostatnio sprawdzanego pola gdzie byla inna wartosc
+                                break;
+                            }
+                            if(c == combo-1)
+                                return charBoard[i][j];
+                        }
+                    }
+                }
+            }
+            // w dol
+            for (int i = 0; i < charBoard.length; i++) { // przeskakujemy po wierszach
+                for (int j = 0; j < charBoard.length; j++) { // przeskakujemy po kolumnach
+//                    if(charBoard.length - i < combo)
+//                        break;  // jezeli tablica krotsza niz combo to na pewno nie ma tu wygranej
+                    if(charBoard.length - j < combo)
+                        break;  // jezeli tablica krotsza niz combo to na pewno nie ma tu wygranej
+                    if (charBoard[j][i] != '\u0000')
+                    {
+                        for(int c = 1; c < combo; c++)
+                        {
+                            // tutaj sprawdzasz czy kolejne 5 znakow takie same
+                            if(charBoard[j][i] != charBoard[j+c][i])
+                            {
+                                j = j+c-1; // jezeli nie to przeskakujesz do ostatnio sprawdzanego pola gdzie byla inna wartosc
+                                break;
+                            }
+                            if(c == combo-1)
+                                return charBoard[j][i];
+                        }
+                    }
+                }
+            }
+            // prawo dol skos
+            int startRow = charBoard.length - combo;
+            int startColumn = 0;
+            int row = startRow;
+            int column = startColumn;
+            while(!(startRow < 1 && startColumn > charBoard.length - combo))
+            {
+                if(row > charBoard[column].length - combo && startRow > 0)
                 {
-                    break;
+                    startRow--;
+                    column = startColumn;
+                    row = startRow;
+                    //System.out.println("Wspinam sie po row do gury na " + startRow);
                 }
-            }
-        }
+                else if(column > charBoard.length - combo && startRow <= 0) // <<<
+                {
+                    startColumn++;
+                    row = startRow;
+                    column = startColumn;
+                    //System.out.println("ide po kolumnach w prawo na " + startColumn);
+                }
 
-        //diagonally from top
-        for(int i = 1; i < charBoard.length; i++)
-        {
-            if(charBoard[i - 1][i - 1] != '\u0000' && charBoard[i][i] != '\u0000') {
-                if (charBoard[i - 1][i - 1] == charBoard[i][i]) {
-                    if(i >= charBoard.length-1)
+                //System.out.println("Jestem na: " + charBoard[row][column] + " na pozycji: row: " + row + " column: " + column);
+                if (charBoard[row][column] != '\u0000')
+                {
+                    for(int c = 1; c < combo; c++)
                     {
-                        return charBoard[i][i];
+                            //System.out.println("Znalazłem: " + charBoard[row][column] + " na pozycji: row: " + row + " column: " + column);
+
+                        // tutaj sprawdzasz czy kolejne 5 znakow takie same
+                        if(charBoard[row][column] != charBoard[row+c][column+c])
+                        {
+                            //System.out.println("Poczontek: row: " + row + " column " +column+ " Koniec serii: row: " + (row +c) + " column: " + (column+c));
+                            row = row+c-1; // jezeli nie to przeskakujesz do ostatnio sprawdzanego pola gdzie byla inna wartosc
+                            column = column+c-1;
+                            break;
+                        }
+                        if(c == combo-1)
+                            return charBoard[row][column];
                     }
                 }
-                else break;
-            }
-            else break;
-        }
 
-        // diagonally from down
-        for(int i = 1; i < charBoard.length; i++)
-        {
-            if(charBoard[charBoard.length-1-i][i] != '\u0000' && charBoard[charBoard.length-i][i-1] != '\u0000') {
-                if (charBoard[charBoard.length-1-i][i] == charBoard[charBoard.length-i][i-1]) {
-                    if(i >= charBoard.length-1)
+                column++;
+                row++;
+            }
+
+            // lewo dol skos
+             startRow = 0;
+             startColumn = combo-1;
+             row = startRow;
+             column = startColumn;
+            while(!(startColumn >= charBoard.length-1 && startRow > charBoard[column].length - combo))
+            {
+                if(column < (combo-1) && startColumn < charBoard[startColumn].length-1)
+                {
+                    startColumn++;
+                    column = startColumn;
+                    row = startRow;
+                }
+                else if(row > charBoard.length - combo && startColumn >= charBoard[startColumn].length-1)
+                {
+                    startRow++;
+                    row = startRow;
+                    column = startColumn;
+                }
+
+              //  System.out.println("Jestem na: " + charBoard[row][column] + " na pozycji: row: " + row + " column: " + column);
+                if (charBoard[row][column] != '\u0000')
+                {
+                    for(int c = 1; c < combo; c++)
                     {
-                        return charBoard[charBoard.length-1-i][i];
+                        // tutaj sprawdzasz czy kolejne 5 znakow takie same
+                        if(charBoard[row][column] != charBoard[row+c][column-c])
+                        {
+                            row = row+c+1; // jezeli nie to przeskakujesz do ostatnio sprawdzanego pola gdzie byla inna wartosc
+                            column = column-c+1;
+                            break;
+                        }
+                        if(c == combo-1)
+                            return charBoard[row][column];
                     }
                 }
-                else break;
+                column--;
+                row++;
             }
-            else break;
-        }
-        return null;
+
+            return null;
+        //}
     }
 
     public String returnWinner()
     {
-        char winner = checkIfAnyoneWon();
-        if(winner == '\u0000')
+        Character winner = checkIfAnyoneWon();
+        if(winner == null || winner == '\u0000')
         {
             return null;
         }
@@ -141,7 +263,7 @@ public class GameController {
         {
             if(winner == 'X')
                 return playerX;
-            else return playerY;
+            else return playerO;
         }
 
     }
@@ -163,7 +285,7 @@ public class GameController {
 
     public void incrementPlayerYScore()
     {
-        playerYScore++;
+        playerOScore++;
     }
 
     public Board getBoard()
@@ -179,8 +301,8 @@ public class GameController {
         return aiPlayer;
     }
 
-    public int getPlayerYScore() {
-        return playerYScore;
+    public int getPlayerOScore() {
+        return playerOScore;
     }
 
     public int getPlayerXScore() {
@@ -191,7 +313,7 @@ public class GameController {
         return gameCounter;
     }
 
-    public String getPlayerY() {
-        return playerY;
+    public String getPlayerO() {
+        return playerO;
     }
 }

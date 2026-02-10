@@ -44,9 +44,15 @@ public class Board {
         return ticTacToeBoard[row][column];
     }
 
-    //only for testing
     public void setBoard(char[][] ticTacToeBoard)
     {
+        for(char[] row : ticTacToeBoard)
+        {
+            if(row.length != ticTacToeBoard.length)
+            {
+                throw new RuntimeException("Bat Table");
+            }
+        }
         this.ticTacToeBoard = ticTacToeBoard;
     }
 }
