@@ -56,7 +56,7 @@ public class MenuViewController {
         GameViewController gameCtrl = loader.getController();
 
         OptionsSave.setOptionsSave(difficultChoiceBoxDependicies.get(difficultChoiceBox.getValue()), gameModeChoiceBoxDependicies.get(gameModeChoiceBox.getValue()),aiXRadioButton.isSelected(), aiORadioButton.isSelected(), playerXTextField.getText(), playerOTextField.getText(), animationButton.isSelected());
-        gameCtrl.initGame(difficultChoiceBoxDependicies.get(difficultChoiceBox.getValue()), gameModeChoiceBoxDependicies.get(gameModeChoiceBox.getValue()),aiXRadioButton.isSelected(), aiORadioButton.isSelected(), playerXTextField.getText(), playerOTextField.getText(), animationButton.isSelected());
+        gameCtrl.initGame(difficultChoiceBoxDependicies.get(difficultChoiceBox.getValue()), gameModeChoiceBoxDependicies.get(gameModeChoiceBox.getValue()),aiXRadioButton.isSelected(), aiORadioButton.isSelected(), playerXTextField.getText(), playerOTextField.getText(), animationButton.isSelected(),null);
 
         Stage stage = (Stage) startButton.getScene().getWindow();
         stage.setScene(new Scene(root));
