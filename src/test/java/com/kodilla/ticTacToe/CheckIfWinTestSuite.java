@@ -2,6 +2,7 @@ package com.kodilla.ticTacToe;
 
 import com.kodilla.ticTacToe.game.GameController;
 import com.kodilla.ticTacToe.game.core.Board;
+import com.kodilla.ticTacToe.game.core.GameRules;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -51,94 +52,86 @@ public class CheckIfWinTestSuite {
 
     }
 
+    Board gameBoard = new Board();
+    GameRules gameRules = new GameRules(gameBoard,5);
     @Test
     void testWinDiagonallyX()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(board1WinX);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('X',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('X',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testWinDiagonallyO()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(board4WinO);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('O',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('O',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testWinRowX()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(board2WinX);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('X',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('X',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testWinColumnX()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(board3WinX);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('X',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('X',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testNoWinner1()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(board1NoWinner1);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals(null,gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals(null,gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testNoWinner2()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(board1NoWinner2);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals(null,gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals(null,gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardNoWinner()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardNoWinner1);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals(null,gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals(null,gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardWinnerXRow()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardWinnerXRow);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('X',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('X',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardWinnerOColumn()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardWinnerOColumn);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('O',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('O',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardWinnerXDiagonallyRight()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardWinnerXDiagonallyRight);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('X',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('X',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
@@ -146,34 +139,32 @@ public class CheckIfWinTestSuite {
     {
         Board gameBoard2 = new Board();
         gameBoard2.setBoard(Resources.bigBoardWinnerXDiagonallyRight2);
-        GameController gameController2 = new GameController(gameBoard2,"One","Other");
-        assertEquals('X',gameController2.checkIfAnyoneWon());
+        GameRules gameRules2 = new GameRules(gameBoard2,5);
+        GameController gameController2 = new GameController(gameRules2,"One","Other");
+        assertEquals('X',gameController2.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardWinnerODiagonallyRight()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardWinnerODiagonallyRight);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('O',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('O',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardWinnerODiagonallyLeft()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardWinnerODiagonallyLeft);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('O',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('O',gameController.getGameRules().checkIfAnyoneWon());
     }
 
     @Test
     void testBigBoardWinnerXDiagonallyLeft()
     {
-        Board gameBoard = new Board();
         gameBoard.setBoard(Resources.bigBoardWinnerXDiagonallyLeft);
-        GameController gameController = new GameController(gameBoard,"One","Other");
-        assertEquals('X',gameController.checkIfAnyoneWon());
+        GameController gameController = new GameController(gameRules,"One","Other");
+        assertEquals('X',gameController.getGameRules().checkIfAnyoneWon());
     }
 }

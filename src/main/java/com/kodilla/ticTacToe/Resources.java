@@ -6,6 +6,7 @@ import java.util.*;
 import java.util.Random;
 
 public class Resources {
+    static char emp = '\u0000';
     public static Random getRandom() {
         return new Random();
     }
@@ -25,6 +26,58 @@ public class Resources {
         return positions;
     }
 
+    public static char[] convertColumnToSingleArray(int column, Board board)
+    {
+        char[] resultCharArray = new char[board.getTicTacToeBoard().length];
+        for(int i = 0; i < resultCharArray.length; i++)
+        {
+            resultCharArray[i] = board.getTicTacToeBoard()[i][column];
+        }
+        return resultCharArray;
+    }
+
+    public static char[] convertFromLeftToRightDiagonallyToSingleArray(int row, int column, Board board)
+    {
+        int min = Math.min(row, column);
+        row -= min;
+        column -= min;
+        char[] resultCharArray = new char[board.getTicTacToeBoard().length -(row+column)];
+
+        for(int i = 0; i < resultCharArray.length; i++)
+        {
+            resultCharArray[i] = board.getTicTacToeBoard()[row+i][column+i];
+        }
+        return resultCharArray;
+    }
+
+    public static char[] convertFromRightToLeftDiagonallyToSingleArray(int row, int column, Board board)
+    {
+        // musisz pokombinowac tutaj
+        // albo row 0 albo column length-1
+        int arrayLength;
+        if(column + row <= board.getTicTacToeBoard().length-1)
+        {
+            column = column + row;
+            row = 0;
+            arrayLength = column + 1;
+        }
+        else // dodac to co brakuje column do 9 i zabrac z row to co brakuje column do 9
+        {
+            int missingDistance = (board.getTicTacToeBoard().length - 1) - column;
+            column = column + missingDistance;
+            row = row - missingDistance;
+            arrayLength = (column - row) + 1;
+        }
+        // jestesmy na gorze lub po prwej i schodzimy w lewo w dol
+        char[] resultCharArray = new char[arrayLength];
+
+        for(int i = 0; i < resultCharArray.length; i++)
+        {
+            resultCharArray[i] = board.getTicTacToeBoard()[row+i][column-i];
+        }
+        return resultCharArray;
+    }
+
     public static List<int[]> occupiedFields(Board board)
     {
         List<int[]> positions = new ArrayList<>();
@@ -39,7 +92,16 @@ public class Resources {
         return positions;
     }
 
-    static char emp = '\u0000';
+    public static <T, E> T getKeyByValue(Map<T, E> map, E value) {
+        for (Map.Entry<T, E> entry : map.entrySet()) {
+            if (Objects.equals(value, entry.getValue())) {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
+
+
     public static char[][] bigBoardNoWinner1 = {
             {'X', emp, 'O', 'X', emp, 'X', 'X', emp, 'X','X'},
             {emp, emp, emp, 'X', 'O', emp, emp, emp, 'O','X'},

@@ -1,9 +1,7 @@
 package com.kodilla.ticTacToe.game.visualInterface;
 
-import com.kodilla.ticTacToe.Resources;
 import com.kodilla.ticTacToe.game.GameController;
-import com.kodilla.ticTacToe.game.core.AIPlayer;
-import com.kodilla.ticTacToe.game.core.Board;
+import com.kodilla.ticTacToe.game.core.*;
 
 import java.util.Scanner;
 
@@ -66,7 +64,8 @@ public static void printBoard(char[][] board) {
 
     public static void main(String[] args) {
         //printBoard(Resources.bigBoardWinnerXDiagonallyLeft);
-        gameHandler();
+            gameHandler();
+
     }
 
     static void playerMakeMove(Scanner myObj, GameController gameController,boolean itX)
@@ -114,8 +113,26 @@ public static void printBoard(char[][] board) {
     static void gameHandler()
     {
         Board board;
+        int maxWinCombo = 5;
+        //MovesEvaluator movesEvaluator = new MovesEvaluator(board,);
 
         Scanner myObj = new Scanner(System.in);
+
+        System.out.println("Chose Difficult: ");
+        for(int i = 0; i < DifficultLevel.values().length;i++)
+        {
+            System.out.println((i+1)+") " + DifficultLevel.values()[i]);
+        }
+        int difficult = 0;
+        do {
+            try {
+                difficult = Integer.parseInt(myObj.nextLine());
+            } catch (NumberFormatException e) {
+                System.out.println("Please! Type 1, 2 or 3");
+            }
+        }
+        while (difficult != 1 && difficult != 2 && difficult != 3);
+
 
         System.out.println("type \"1\" to play on classic or \"2\" to play to five.");
         int gameBoard = 0;
@@ -131,6 +148,8 @@ public static void printBoard(char[][] board) {
         board = new Board();
         if(gameBoard == 2)
             board.setBoard(new char[10][10]);
+
+        GameRules gameRules = new GameRules(board,maxWinCombo);
 
         System.out.println("type \"1\" to play with AI or \"2\" to play with other human.");
         int gameMode = 0;
@@ -152,61 +171,60 @@ public static void printBoard(char[][] board) {
             }
             while (!AIXorO.equals("X") && !AIXorO.equals("O"));
 
-            AIPlayer ai = new AIPlayer(AIXorO.equals("O"));
             System.out.println("Enter name: ");
             String userName = myObj.nextLine();  // Read user input
-            gameController = new GameController(board, ai, userName);
+            gameController = new GameController(gameRules, AIXorO.equals("X"), userName,DifficultLevel.values()[difficult-1]);
         }
         else {
             System.out.println("Enter first player (X) name: ");
             String firstPlayer = myObj.nextLine();  // Read user input
             System.out.println("Enter secound player (O) name: ");
             String secondPlayer = myObj.nextLine();  // Read user input
-            gameController = new GameController(board, firstPlayer, secondPlayer);
+            gameController = new GameController(gameRules, firstPlayer, secondPlayer);
         }
 
-        printBoard(gameController.getBoard().getTicTacToeBoard());
+        printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
         do {
             if(gameMode == 1 && gameController.getAiPlayer().getItX())
             {
                 gameController.AIMakeMove(); // jezeli ai x to zaczyna
-                printBoard(gameController.getBoard().getTicTacToeBoard());
-                if(gameController.isBoardFull() || gameController.checkIfAnyoneWon() != null)
+                printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
+                if(gameController.isBoardFull() || gameController.getGameRules().checkIfAnyoneWon() != null)
                     break;
                 playerMakeMove(myObj,gameController,false);
             }
             else if(gameMode == 1 && !gameController.getAiPlayer().getItX())
             {
                 playerMakeMove(myObj,gameController,true);
-                if(gameController.isBoardFull() || gameController.checkIfAnyoneWon() != null) {
-                    printBoard(gameController.getBoard().getTicTacToeBoard());
+                if(gameController.isBoardFull() || gameController.getGameRules().checkIfAnyoneWon() != null) {
+                    printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
                     break;
                 }
                 gameController.AIMakeMove();
-                printBoard(gameController.getBoard().getTicTacToeBoard());
+                printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
             }
             else
             {
-                printBoard(gameController.getBoard().getTicTacToeBoard());
+                printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
                 System.out.println("Player " + gameController.getPlayerX() + " have move.");
                 playerMakeMove(myObj,gameController,true);
-                if(gameController.isBoardFull() || gameController.checkIfAnyoneWon() != null)
+                if(gameController.isBoardFull() || gameController.getGameRules().checkIfAnyoneWon() != null)
                     break;
-                printBoard(gameController.getBoard().getTicTacToeBoard());
+                printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
                 System.out.println("Player " + gameController.getPlayerO() + " have move.");
                 playerMakeMove(myObj,gameController,false);
             }
 
         }
-        while(gameController.checkIfAnyoneWon() == null && !gameController.isBoardFull());
+        while(gameController.getGameRules().checkIfAnyoneWon() == null && !gameController.isBoardFull());
 
-        printBoard(gameController.getBoard().getTicTacToeBoard());
+        printBoard(gameController.getGameRules().getBoard().getTicTacToeBoard());
         String winner = gameController.returnWinner();
         if(winner != null)
         System.out.println("Game over. The winner: " + gameController.returnWinner());
         else  System.out.println("Game over. Tie!");
 
-        System.out.println("Type exit to exit");
+        System.out.println("Type anything to exit");
         myObj.nextLine();
     }
 }

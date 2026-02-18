@@ -50,7 +50,7 @@ public class Board {
         {
             if(row.length != ticTacToeBoard.length)
             {
-                throw new RuntimeException("Bat Table");
+                throw new RuntimeException("Board should be square!");
             }
         }
         this.ticTacToeBoard = ticTacToeBoard;

@@ -36,8 +36,8 @@ public class BlackJack extends Application {
         grid.setVgap(5.5);
         grid.setBackground(background);
 
-        ImageView img = new ImageView(card);
-        cards.getChildren().add(img);
+     //   ImageView img = new ImageView(card);
+      //  cards.getChildren().add(img);
 
         grid.add(cards, 0, 0, 3, 1);
 
