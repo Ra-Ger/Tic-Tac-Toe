@@ -50,5 +50,6 @@
          </font>
       </Button>
       <RadioButton fx:id="animationButton" layoutX="31.0" layoutY="250.0" mnemonicParsing="false" text="Animations" />
+      <Button fx:id="clearSaveButton" layoutX="196.0" layoutY="250.0" mnemonicParsing="false" onAction="#handleClearSave" prefHeight="30.0" prefWidth="104.0" text="Clear save" />
    </children>
 </AnchorPane>

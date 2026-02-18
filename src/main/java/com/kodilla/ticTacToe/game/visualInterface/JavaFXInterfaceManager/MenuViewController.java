@@ -4,6 +4,7 @@ import com.kodilla.ticTacToe.Resources;
 import com.kodilla.ticTacToe.game.core.DifficultLevel;
 import com.kodilla.ticTacToe.game.core.GameMode;
 import com.kodilla.ticTacToe.game.core.OptionsSave;
+import com.kodilla.ticTacToe.game.core.saveSystem.SaveManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -11,6 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import java.io.File;
 
 import java.util.*;
 
@@ -73,6 +75,12 @@ public class MenuViewController {
     {
         if(aiXRadioButton.isSelected())
             aiXRadioButton.setSelected(false);
+    }
+
+    @FXML
+    private void handleClearSave(ActionEvent event)
+    {
+        SaveManager.clearSave();
     }
 
 

@@ -36,16 +36,36 @@
                   <Font size="24.0" />
                </font>
             </Text>
-            <Button fx:id="newGameButton" layoutX="375.0" layoutY="29.0" mnemonicParsing="false" onAction="#handleNewGameClick" prefHeight="58.0" prefWidth="158.0" text="New game">
+            <Button fx:id="newGameButton" layoutX="415.0" layoutY="83.0" mnemonicParsing="false" onAction="#handleNewGameClick" prefHeight="40.0" prefWidth="130.0" text="New game">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <Button fx:id="exitButton" layoutX="415.0" layoutY="135.0" mnemonicParsing="false" onAction="#handleExitClick" prefHeight="40.0" prefWidth="130.0" text="Exit">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <Button fx:id="nextRoundButton" layoutX="415.0" layoutY="29.0" mnemonicParsing="false" onAction="#handleNextRoundButtonClick" prefHeight="40.0" prefWidth="130.0" text="Next round">
+               <font>
+                  <Font size="18.0" />
+               </font>
+            </Button>
+            <Text fill="WHITE" layoutX="376.0" layoutY="604.0" strokeType="OUTSIDE" strokeWidth="0.0" text="X score: 1000" wrappingWidth="366.0" fx:id="xScoreText">
                <font>
                   <Font size="24.0" />
                </font>
-            </Button>
-            <Button fx:id="exitButton" layoutX="375.0" layoutY="103.0" mnemonicParsing="false" onAction="#handleExitClick" prefHeight="58.0" prefWidth="158.0" text="Exit">
+            </Text>
+            <Text fx:id="oScoreText" fill="WHITE" layoutX="775.0" layoutY="603.0" strokeType="OUTSIDE" strokeWidth="0.0" text="O score: 1000" wrappingWidth="330.0">
                <font>
                   <Font size="24.0" />
                </font>
-            </Button>
+            </Text>
+            <Text fx:id="roundText" fill="WHITE" layoutX="604.0" layoutY="23.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Round: 13" wrappingWidth="215.0">
+               <font>
+                  <Font size="24.0" />
+               </font>
+            </Text>
          </children>
       </AnchorPane>
    </children>

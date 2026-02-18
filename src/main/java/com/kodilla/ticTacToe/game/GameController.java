@@ -17,8 +17,6 @@ public class GameController {
     int maxWinCombo = 5;
     DifficultLevel difficultLevel;
 
-
-
     public GameController(GameRules gameRules, String playerX, String playerO) {
         this.gameRules = gameRules;
         this.playerX = playerX;
@@ -93,6 +91,38 @@ public class GameController {
 
     public String getPlayerO() {
         return playerO;
+    }
+
+    public int getGameCounter() {
+        return gameCounter;
+    }
+
+    public void setGameCounter(int gameCounter) {
+        this.gameCounter = gameCounter;
+    }
+
+    public int getPlayerXScore() {
+        return playerXScore;
+    }
+
+    public void setPlayerXScore(int playerXScore) {
+        this.playerXScore = playerXScore;
+    }
+
+    public int getPlayerOScore() {
+        return playerOScore;
+    }
+
+    public void setPlayerOScore(int playerOScore) {
+        this.playerOScore = playerOScore;
+    }
+
+    public void setPlayerX(String playerX) {
+        this.playerX = playerX;
+    }
+
+    public void setPlayerO(String playerO) {
+        this.playerO = playerO;
     }
 
 }

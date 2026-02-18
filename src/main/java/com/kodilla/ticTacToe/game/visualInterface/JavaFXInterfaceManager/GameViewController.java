@@ -1,10 +1,13 @@
 package com.kodilla.ticTacToe.game.visualInterface.JavaFXInterfaceManager;
 
+import com.kodilla.ticTacToe.game.core.saveSystem.GameStats;
+import com.kodilla.ticTacToe.game.core.saveSystem.SaveManager;
 import javafx.animation.*;
 import com.kodilla.ticTacToe.game.core.Board;
 import com.kodilla.ticTacToe.game.core.DifficultLevel;
 import com.kodilla.ticTacToe.game.core.GameMode;
 import com.kodilla.ticTacToe.game.core.GameRules;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -32,18 +35,16 @@ import java.io.IOException;
 
 public class GameViewController {
 
-    @FXML
-    private GridPane boardGrid;
-    @FXML
-    AnchorPane mainContainer;
-    @FXML
-    Text infoText;
-    @FXML
-    Button newGameButton;
-    @FXML
-    Button exitButton;
-    @FXML
-    ImageView mainImageView;
+    @FXML private GridPane boardGrid;
+    @FXML AnchorPane mainContainer;
+    @FXML Text infoText;
+    @FXML Button newGameButton;
+    @FXML Button exitButton;
+    @FXML ImageView mainImageView;
+    @FXML Button nextRoundButton;
+    @FXML Text xScoreText;
+    @FXML Text oScoreText;
+    @FXML Text roundText;
 
     private GameController gameController;
     DifficultLevel difficultLevel;
@@ -60,14 +61,14 @@ public class GameViewController {
     private final Image mainGraphicAnimated = new Image(getClass().getResourceAsStream("/GameAnimation.gif"));
     private final Image endGameGraphicAnimated = new Image(getClass().getResourceAsStream("/GameOverAnimation.gif"));
     boolean itXturn = true;
+    private Timeline shinyTimeline;
 
     @FXML
     public void initialize() {
 
     }
 
-    public void initGame(DifficultLevel difficultLevel, GameMode gameMode, boolean isAIX, boolean isAIO, String playerX, String playerO, boolean animationsEnabled)
-    {
+    public void initGame(DifficultLevel difficultLevel, GameMode gameMode, boolean isAIX, boolean isAIO, String playerX, String playerO, boolean animationsEnabled) {
         this.difficultLevel = difficultLevel;
         this.gameMode = gameMode;
         this.isAIX = isAIX;
@@ -76,34 +77,64 @@ public class GameViewController {
         this.playerO = playerO;
         this.animationsEnabled = animationsEnabled;
 
-        if(animationsEnabled)
-            mainImageView.setImage(mainGraphicAnimated);
-        else
-            mainImageView.setImage(mainGraphic);
-
         Board board = new Board();
-        switch (gameMode)
-        {
-            case CLASSIC:
-                board.setBoard(new char[3][3]);
-                break;
-            case GOMOKU10X10:
-                board.setBoard(new char[10][10]);
-                break;
-        }
-        GameRules gameRules = new GameRules(board,5);
-        if(!isAIX && !isAIO)
-            gameController = new GameController(gameRules,playerX,playerO);
-        else
-            gameController = new GameController(gameRules,isAIO,isAIO ? playerX : playerO, difficultLevel);
+        int size = (gameMode == GameMode.GOMOKU10X10) ? 10 : 3;
+        board.setBoard(new char[size][size]);
+        GameRules gameRules = new GameRules(board, 5);
 
-        setupBoard(board.getTicTacToeBoard().length);
-        infoText.setVisible(false);
-        if(gameController.getAiPlayer() != null && gameController.getAiPlayer().getItX())
-        {
-            gameController.getAiPlayer().makeMove();
-            drawBoard();
+        GameStats stats = SaveManager.loadGame();
+
+        if (stats != null) {
+            this.isAIX = stats.isPlayerXAI;
+            this.isAIO = stats.isPlayerOAI;
+            this.playerX = stats.playerXName;
+            this.playerO = stats.playerOName;
+            this.difficultLevel = stats.difficultLevel;
         }
+
+        if (!this.isAIX && !this.isAIO) {
+            gameController = new GameController(gameRules, this.playerX, this.playerO);
+        } else {
+            String name = this.isAIO ? this.playerX : this.playerO;
+            gameController = new GameController(gameRules, this.isAIO, name, this.difficultLevel);
+        }
+
+        setupBoard(size);
+        infoText.setVisible(false);
+        if (animationsEnabled) mainImageView.setImage(mainGraphicAnimated);
+        else mainImageView.setImage(mainGraphic);
+
+        if (stats != null) {
+            applyLoadedStats(stats);
+
+            Platform.runLater(() -> {
+                checkGameState();
+            });
+        } else {
+            updateScoreLabels();
+            roundText.setText("1");
+            if (gameController.getAiPlayer() != null && gameController.getAiPlayer().getItX()) {
+                gameController.getAiPlayer().makeMove();
+                drawBoard();
+            }
+        }
+    }
+
+    private void applyLoadedStats(GameStats stats) {
+        gameController.setPlayerXScore(stats.scoreX);
+        gameController.setPlayerOScore(stats.scoreO);
+        gameController.setGameCounter(stats.gameCounter);
+        gameController.getGameRules().getBoard().setBoard(stats.board);
+
+        itXturn = stats.xHaveMove;
+        updateScoreLabels();
+        roundText.setText(String.valueOf(stats.gameCounter + 1));
+        drawBoard();
+    }
+
+    private void updateScoreLabels() {
+        xScoreText.setText(gameController.getPlayerX() + ": " + gameController.getPlayerXScore());
+        oScoreText.setText(gameController.getPlayerO() + ": " + gameController.getPlayerOScore());
     }
 
     private void setupBoard(int size) {
@@ -143,10 +174,13 @@ public class GameViewController {
     }
 
     private void drawWinningLine(Button startBtn, Button endBtn) {
+        if (startBtn == null || endBtn == null) return;
+
         Bounds startBounds = startBtn.localToScene(startBtn.getBoundsInLocal());
         Bounds endBounds = endBtn.localToScene(endBtn.getBoundsInLocal());
 
-        // srodek sceny
+        if (startBounds == null || endBounds == null) return;
+
         double startX = startBounds.getMinX() + startBounds.getWidth() / 2;
         double startY = startBounds.getMinY() + startBounds.getHeight() / 2;
         double endX = endBounds.getMinX() + endBounds.getWidth() / 2;
@@ -156,10 +190,13 @@ public class GameViewController {
         line.setStroke(Color.RED);
         line.setStrokeWidth(8);
 
-        ((AnchorPane) boardGrid.getScene().getRoot()).getChildren().add(line);
+        Platform.runLater(() -> {
+            if (boardGrid.getScene() != null) {
+                ((AnchorPane) boardGrid.getScene().getRoot()).getChildren().add(line);
+            }
+        });
     }
 
-    // wywolywane po wcisnienciu grida
     private void handleMove(int row, int col, Button btn) {
 
         boolean isMoveLegal = gameController.isMoveLegal(row, col);
@@ -178,6 +215,7 @@ public class GameViewController {
         }
         drawBoard();
         checkGameState();
+        saveCurrentState();
     }
 
     private void drawBoard()
@@ -196,7 +234,7 @@ public class GameViewController {
         String winner = gameController.returnWinner();
         if (winner != null || gameController.isBoardFull()) {
 
-            shinnyButton(newGameButton);
+            shinnyButton(nextRoundButton);
             infoText.setVisible(true);
             if(animationsEnabled) {
                 infoText.layoutXProperty().set(340);
@@ -206,12 +244,19 @@ public class GameViewController {
                 mainImageView.setImage(endGameGraphic);
 
             if (winner != null) {
+
+                if(gameController.returnWinner().equals(gameController.getPlayerX()))
+                    gameController.setPlayerXScore(gameController.getPlayerXScore()+1);
+                else gameController.setPlayerOScore(gameController.getPlayerOScore()+1);
+
                 int[] rowColX2 = gameController.getGameRules().getStartAndEndOfCombo();
                 drawWinningLine(getButtonByCoords(rowColX2[0],rowColX2[1]),getButtonByCoords(rowColX2[2],rowColX2[3]));
                 infoText.setText("Winner: " + winner);
             } else {
                 infoText.setText("Tie!");
             }
+            gameController.setGameCounter(gameController.getGameCounter()+1);
+            saveCurrentState();
             boardGrid.setDisable(true);
             return true;
         }
@@ -219,7 +264,9 @@ public class GameViewController {
     }
 
     private void updateButton(Button btn, char symbol) {
-        if(symbol != '\u0000') {
+        if (btn == null) return;
+
+        if (symbol != '\u0000') {
             ImageView iv = new ImageView(symbol == 'X' ? xImage : oImage);
             iv.fitWidthProperty().bind(btn.widthProperty().multiply(0.7));
             iv.fitHeightProperty().bind(btn.heightProperty().multiply(0.7));
@@ -228,6 +275,9 @@ public class GameViewController {
             btn.setGraphic(iv);
             btn.setDisable(true);
             btn.setOpacity(1.0);
+        } else {
+            btn.setGraphic(null);
+            btn.setDisable(false);
         }
     }
 
@@ -243,7 +293,39 @@ public class GameViewController {
     }
 
     @FXML
+    private void handleNextRoundButtonClick(ActionEvent event) throws IOException
+    {
+        stopShinyEffect(nextRoundButton);
+        char[][] board = new char[gameController.getGameRules().getBoard().getTicTacToeBoard().length][gameController.getGameRules().getBoard().getTicTacToeBoard().length];
+        gameController.getGameRules().getBoard().setBoard(board);
+        itXturn = true;
+
+        infoText.setVisible(false);
+        boardGrid.setDisable(false);
+
+        mainContainer.getChildren().removeIf(node -> node instanceof Line);
+
+        if (animationsEnabled)
+            mainImageView.setImage(mainGraphicAnimated);
+        else
+            mainImageView.setImage(mainGraphic);
+
+        setupBoard(board.length);
+
+        roundText.setText(String.valueOf(gameController.getGameCounter() + 1));
+        updateScoreLabels();
+
+        if (gameController.getAiPlayer() != null && gameController.getAiPlayer().getItX()) {
+            gameController.getAiPlayer().makeMove();
+            drawBoard();
+        }
+
+        saveCurrentState();
+    }
+
+    @FXML
     private void handleNewGameClick(ActionEvent event) throws IOException {
+        SaveManager.clearSave();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/MenuView.fxml"));
         Parent root = loader.load();
 
@@ -260,19 +342,70 @@ public class GameViewController {
 
     void shinnyButton(Button button)
     {
+        stopShinyEffect(button);
+
         DropShadow glow = new DropShadow();
         glow.setColor(Color.GOLD);
         glow.setRadius(15);
         glow.setSpread(0.3);
         button.setEffect(glow);
 
-        Timeline timeline = new Timeline(
+        shinyTimeline = new Timeline(
                 new KeyFrame(Duration.ZERO, new KeyValue(glow.radiusProperty(), 15)),
                 new KeyFrame(Duration.seconds(0.8), new KeyValue(glow.radiusProperty(), 30)),
                 new KeyFrame(Duration.seconds(1.6), new KeyValue(glow.radiusProperty(), 15))
         );
-        timeline.setCycleCount(Animation.INDEFINITE);
-        timeline.setAutoReverse(true);
-        timeline.play();
+        shinyTimeline.setCycleCount(Animation.INDEFINITE);
+        shinyTimeline.setAutoReverse(true);
+        shinyTimeline.play();
+    }
+
+    private void stopShinyEffect(Button button) {
+        if (shinyTimeline != null) {
+            shinyTimeline.stop();
+            shinyTimeline = null;
+        }
+        button.setEffect(null); // Usuwa DropShadow
+    }
+
+    private void saveCurrentState() {
+        if (gameController != null) {
+            char[][] currentBoard = gameController.getGameRules().getBoard().getTicTacToeBoard();
+            SaveManager.saveGame(
+                    playerX, playerO, isAIX, isAIO,
+                    gameController.getPlayerXScore(),
+                    gameController.getPlayerOScore(),
+                    currentBoard,
+                    gameController.getGameCounter(),
+                    itXturn,
+                    difficultLevel,
+                    gameMode,
+                    animationsEnabled
+            );
+        }
+    }
+
+    private boolean loadSavedState() {
+        GameStats stats = SaveManager.loadGame();
+        if (stats != null) {
+            isAIX = stats.isPlayerXAI;
+            isAIO = stats.isPlayerOAI;
+            animationsEnabled = stats.animations;
+            gameController.setPlayerXScore(stats.scoreX);
+            gameController.setPlayerOScore(stats.scoreO);
+            gameController.setGameCounter(stats.gameCounter);
+            gameController.setPlayerX(stats.playerXName);
+            gameController.setPlayerO(stats.playerOName);
+
+            gameController.getGameRules().getBoard().setBoard(stats.board);
+
+            updateScoreLabels();
+            roundText.setText(String.valueOf(stats.gameCounter + 1));
+
+            drawBoard();
+            itXturn = stats.xHaveMove;
+            return true;
+        }
+        return false;
     }
 }
