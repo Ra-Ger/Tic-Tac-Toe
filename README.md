@@ -1,4 +1,4 @@
-# ❌ Tic-Tac-Toe JavaFX ⭕
+# ❌ Tic-Tac-Toe ⭕
 
 Relax and play the game of your childhood!
 
