@@ -15,4 +15,4 @@ Relax and play the game of your childhood!
 
 | Platform | Download Link |
 | :--- | :--- |
-| **Windows (.zip)** | [Download from Google Drive](https://drive.google.com/file/d/1A6gzjLoE_03N94H0zmcssR8Z8b8XnkrS/view?usp=drive_link) |
+| **Windows (.zip)** | [Download from Google Drive](https://drive.google.com/file/d/1AIDECrKDpt_QbPpsg6NpeQuBKOnxMey9/view?usp=sharing) |
